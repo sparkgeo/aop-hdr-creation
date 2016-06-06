@@ -1,4 +1,6 @@
-import geoio, os, collections
+import geoio
+import os
+import collections
 
 from datetime import date
 
@@ -13,7 +15,7 @@ DG_SATID_TO_ENVI = {
 
 DG_WAVELENGTH_UNITS = 'nm'
 
-def create_hdr(aop_path, debug="no", description = None):
+def create_hdr(aop_path, debug="no", description=None):
     #aop_path is assumed to be a path to the .tif file of an AOP image product
 
     #create empty hdr file
