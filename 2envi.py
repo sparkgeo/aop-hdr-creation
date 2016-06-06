@@ -2,7 +2,6 @@ import sys, getopt
 from aop_to_envi_hdr import create_hdr
 
 def main(argv):
-    aop = ''
     try:
         opts, args = getopt.getopt(argv, 'a:', ["aop="])
     except getopt.GetoptError:
