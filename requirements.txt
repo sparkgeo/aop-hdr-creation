@@ -1,1 +1,3 @@
 geoio>=1.2.3
+git+https://github.com/sparkgeo/aop-hdr-creation.git@master
+glob
