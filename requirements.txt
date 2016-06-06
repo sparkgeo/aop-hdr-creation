@@ -1,3 +1,2 @@
 geoio>=1.2.3
-git+https://github.com/sparkgeo/aop-hdr-creation.git@master
-glob
+git+https://github.com/TDG-Platform/gbdx-task-interface.git@master
