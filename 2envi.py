@@ -1,5 +1,5 @@
 import sys, getopt
-from hdr_meta_clean import AOP_2_ENVI
+from aop_to_envi_hdr import create_hdr
 
 def main(argv):
     aop = ''
@@ -11,7 +11,7 @@ def main(argv):
     for opt, arg in opts:
         print opt
         if opt in ('-a', "--aop"):
-            AOP_2_ENVI(arg)
+            create_hdr(arg)
         else:
             print '2envi.py -a <aop file>'
 
