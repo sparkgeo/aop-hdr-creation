@@ -1,5 +1,7 @@
 from glob import glob
 import os
+import logging
+
 from aop_to_envi_hdr import create_hdr
 from gbdx_task_interface import GbdxTaskInterface
 
@@ -15,11 +17,22 @@ class AOPToEnviHdr(GbdxTaskInterface):
         except Exception as e:
             self.logger.exception(e)
 
+        # Set-up logger
+        logger = logging.getLogger('aoptoenvi')
+        formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+        hdlr = logging.FileHandler(os.path.join(output_port_path, 'app.log'))
+        hdlr.setFormatter(formatter)
+        logger.addHandler(hdlr)
+        logger.setLevel(logging.DEBUG)
+
+        logger.debug('Start: %s' % glob('%s/*.tif' % image_port_path))
 
         for img_file in glob('%s/*.tif' % image_port_path):
+            logger.debug('Input Image: %s' % img_file)
             create_hdr(
                 os.path.join(image_port_path, img_file),
                 output_port_path,
+                logger=logger
             )
 
         self.reason = 'Successfully created Header file'
