@@ -1,8 +1,11 @@
 import geoio
 import os
 import collections
+from glob import glob
+from shutil import copyfile
 
 from datetime import date
+
 
 DG_SATID_TO_ENVI = {
     'WV01': 'WorldView-1',
@@ -15,14 +18,19 @@ DG_SATID_TO_ENVI = {
 
 DG_WAVELENGTH_UNITS = 'nm'
 
-def create_hdr(aop_path, debug="no", description=None):
+def create_hdr(aop_path, output_port_path, debug="no", description=None, **kwargs):
     #aop_path is assumed to be a path to the .tif file of an AOP image product
+    filename = os.path.split(aop_path)[1]
+    new_filename = '%s.hdr' % os.path.splitext(filename)[0]
+
+    # Copy input files to output
+    for filename in glob('%s.*' % os.path.splitext(aop_path)[0]):
+        dest = os.path.join(output_port_path, os.path.split(filename)[1])
+        copyfile(filename, dest)
+        logit.debug('%s -> %s' % (filename, dest))
 
     #create empty hdr file
-    hdr_file = open(os.path.splitext(aop_path)[0] + ".hdr", "w+")
-    # Allow for manual description
-    if description == None:
-        description = 'Creating ENVI hdr file from AOP data [' + date.today().isoformat() + ']'
+    hdr_file = open(os.path.join(output_port_path, new_filename), "w+")
 
     # Add fixed values hdr line
     hdr_file.write('ENVI\n')
@@ -37,18 +45,18 @@ def create_hdr(aop_path, debug="no", description=None):
     #create ordered dictto have some contraol over writing order
     envi_dict = collections.OrderedDict()
     #add elements to the ODict
-    envi_dict['description'] = '{' + description + '}'
+    envi_dict['description'] = '{Creating ENVI hdr file from AOP data [%s]}'
     envi_dict['sensor type'] = DG_SATID_TO_ENVI[img.meta.satid]
     envi_dict['lines'] = str(img.meta.shape[1])
     envi_dict['samples'] = str(img.meta.shape[2])
     envi_dict['bands'] = str(img.meta.shape[0])
-    envi_dict['band names'] = '{\n' + "  " + ", ".join(str(e) for e in img.meta.band_names) + '}'
-    envi_dict['wavelength'] = '{\n' + "  " + ", ".join(str(e) for e in img.meta.band_centers) + '}'
+    envi_dict['band names'] = '{%s}' % ', '.join(str(e) for e in img.meta.band_names)
+    envi_dict['wavelength'] = '{%s}' % ', '.join(str(e) for e in img.meta.band_centers)
     envi_dict['wavelength units'] = DG_WAVELENGTH_UNITS
 
     for entry, value in envi_dict.iteritems():
         #iterate through elements to write them out to file
-        hdr_file.write(entry + " = " + value + '\n')
+        hdr_file.write('%s = %s\n' % (entry, value))
 
     #close file
     hdr_file.close()
