@@ -8,15 +8,19 @@ class AOPToEnviHdr(GbdxTaskInterface):
 
     def invoke(self):
         image_port_path = self.get_input_data_port('image')
+        output_port_path = self.get_output_data_port('output_data')
 
-        file_names = glob('*.tif')
+        try:
+            os.makedirs(output_port_path)
+        except Exception as e:
+            self.logger.exception(e)
 
-        if len(file_names) != 1:
-            raise ValueError('ONLY ONE IMAGE FILE SUPPORTED. EITHER NONE OR MANY FILES WERE FOUND.')
 
-        new_filename = os.path.join(image_port_path, file_names[0])
-
-        create_hdr(new_filename)
+        for img_file in glob('%s/*.tif' % image_port_path):
+            create_hdr(
+                os.path.join(image_port_path, img_file),
+                output_port_path,
+            )
 
         self.reason = 'Successfully created Header file'
 
