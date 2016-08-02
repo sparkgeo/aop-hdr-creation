@@ -44,7 +44,7 @@ def create_hdr(img_path, output_port_path, **kwargs):
     #open image in geoio
     try:
         img = geoio.DGImage(img_path)
-    except TypeError:
+    except Exception:
         # Not an ortho image
         img = geoio.GeoImage(img_path)
 
