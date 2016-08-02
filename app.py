@@ -1,5 +1,6 @@
 from glob import glob
 import os
+import sys
 import logging
 
 from aop_to_envi_hdr import create_hdr
@@ -20,10 +21,16 @@ class AOPToEnviHdr(GbdxTaskInterface):
         # Set-up logger
         logger = logging.getLogger('aoptoenvi')
         formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+
         hdlr = logging.FileHandler(os.path.join(output_port_path, 'app.log'))
+        hdlr.setLevel(logging.DEBUG)
         hdlr.setFormatter(formatter)
         logger.addHandler(hdlr)
-        logger.setLevel(logging.DEBUG)
+
+        std_out = logging.StreamHandler(sys.stdout)
+        std_out.setLevel(logging.DEBUG)
+        std_out.setFormatter(formatter)
+        logger.addHandler(std_out)
 
         logger.debug('Start: %s' % glob('%s/*.tif' % image_port_path))
 
